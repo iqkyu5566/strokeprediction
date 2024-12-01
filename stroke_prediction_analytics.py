@@ -341,3 +341,51 @@ sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
 plt.title('Confusion Matrix')
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
+
+"""Hyperparameter Model Support Vektor Machine dengan GridSearch
+
+Parameter yang digunakan untuk optimasi model Support Vektor Machine menggunakan GridSearch yaitu:
+
+- 'C': [0.1, 1, 10]
+- 'gamma': [1, 0.1, 0.01]
+- 'kernel': ['linear', 'poly', 'rbf']
+
+Dari parameter diatas akan dicari nilai parameter terbaik menggunakan GridSearch untuk model klasifikasi support vektor machine.
+"""
+
+param_grid_svm = {
+    'C': [0.1, 1, 10],
+    'gamma': [1, 0.1, 0.01],
+    'kernel': ['rbf', 'poly', 'linear']
+}
+grid_search_svm = GridSearchCV(SVC(random_state=42), param_grid=param_grid_svm, cv=5)
+grid_search_svm.fit(X_train_scaled, y_train)
+best_svm = grid_search_svm.best_estimator_
+
+# Output hasil terbaik
+print("Best Parameters for SVM:", grid_search_svm.best_params_)
+
+from sklearn.metrics import accuracy_score, classification_report
+
+# Prediksi data uji
+y_pred_svm = best_svm.predict(X_test_scaled)
+
+# Evaluasi Akurasi
+accuracy = accuracy_score(y_test, y_pred_svm)
+print(f"Akurasi: {accuracy:.2f}")
+
+# Evaluasi dengan Classification Report
+report = classification_report(y_test, y_pred_svm, target_names=['No Stroke', 'Stroke'])
+print("Classification Report:")
+print(report)
+
+# Membuat Confusion Matrix
+cm = confusion_matrix(y_test, y_pred_svm)
+
+# Visualisasi Confusion Matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False)
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
