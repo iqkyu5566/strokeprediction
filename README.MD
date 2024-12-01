@@ -337,6 +337,34 @@ Akurasi: 0.9460285132382892
 
 ![CM SVM](https://github.com/iqkyu5566/strokeprediction/blob/main/img/datapreparation3.png?raw=true)
 
+Hyperparameter Model Support Vektor Machine dengan GridSearch
+
+Parameter yang digunakan untuk optimasi model Support Vektor Machine menggunakan GridSearch yaitu:
+
+- 'C': [0.1, 1, 10]
+- 'gamma': [1, 0.1, 0.01]
+- 'kernel': ['linear', 'poly', 'rbf']
+
+Dari parameter diatas akan dicari nilai parameter terbaik menggunakan GridSearch untuk model klasifikasi support vektor machine.
+
+Best Parameters for SVM: {'C': 0.1, 'gamma': 1, 'kernel': 'rbf'}
+
+Akurasi: 0.95
+Classification Report:
+precision recall f1-score support
+
+No Stroke 0.95 1.00 0.97 929
+Stroke 0.00 0.00 0.00 53
+
+    accuracy                           0.95       982
+
+macro avg 0.47 0.50 0.49 982
+weighted avg 0.89 0.95 0.92 982
+
+- Berikut merupakan hasil dari confusion matrix pada model Support Vektor Machine:
+
+![CM SVM Hypertunning](https://github.com/iqkyu5566/strokeprediction/blob/main/img/datapreparation4.png?raw=true)
+
 ### Metrik Evaluasi
 
 Accuracy: Mengukur proporsi prediksi yang benar.
@@ -350,20 +378,20 @@ F1-Score: Kombinasi harmonis antara precision dan recall.
 
 Accuracy: 95%
 Precision: 89%
-Recall: 47%
-F1-Score: 61%
+Recall: 95%
+F1-Score: 92%
 
 ### Base Model SVM:
 
-Accuracy: 94.6%
-Precision: 88%
-Recall: 50%
-F1-Score: 63%
+Accuracy: 95%
+Precision: 89%
+Recall: 95%
+F1-Score: 92%
 
 ### Setelah Hyperparameter Tuning:
 
 Random Forest: Akurasi tetap 95%, tetapi precision dan recall meningkat sedikit.
-SVM: Akurasi meningkat menjadi 94.8% dengan peningkatan pada precision dan recall.
+SVM: Akurasi tetap 95% dengan peningkatan pada precision dan recall.
 
 ## Kesimpulan
 
