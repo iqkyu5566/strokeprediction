@@ -229,6 +229,15 @@ X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
 X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
 X_train_scaled.head()
 
+"""**Menangani Ketidakseimbangan Data dengan Teknik seperti SMOTE**
+SMOTE (Synthetic Minority Over-sampling Technique) digunakan untuk membuat sampel sintetis pada kelas minoritas.
+"""
+
+from imblearn.over_sampling import SMOTE
+
+smote = SMOTE(random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train_scaled, y_train)
+
 """### **Model Development**
 
 Dalam melakukan pemodelan Stroke Prediction Analytics Klasifikasi saya memilih model klasifikasi karena variabel target berupa kalsifikasi rentang nilai 0 - 1 yang menentukan apakah seseorang akan mengalami stroke atau tidak.
@@ -246,7 +255,7 @@ from sklearn.ensemble import RandomForestClassifier
 model_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 
 # Latih model dengan data latih
-model_rf.fit(X_train_scaled, y_train)
+model_rf.fit(X_train_resampled, y_train_resampled)
 
 """**Evaluasi Model Random Forest**"""
 
@@ -289,7 +298,7 @@ param_grid = {
 }
 
 grid_search = GridSearchCV(estimator=model_rf, param_grid=param_grid, cv=5)
-grid_search.fit(X_train_scaled, y_train)
+grid_search.fit(X_train_resampled, y_train_resampled)
 
 # Best parameters dan evaluasi ulang model
 print(grid_search.best_params_)
@@ -298,10 +307,10 @@ print(classification_report(y_test, y_pred_best_rf))
 
 """Hasil parameter terbaik dari Hyperparameter GridSearch yaitu:
 
-'max_depth': 20
-'min_samples_split': 5
+'max_depth': none
+'min_samples_split': 10
 'n_estimators': 200
-Dari hasil optimasi menggunakan Hyperparameter GridSearch dapat diketahui peningkatan dari hasil akurasi sebesar 3% yaitu dari 89% menjadi 91%. Peningkatan ini tejadi dari parameter terbaik yang dihasilkan.
+
 """
 
 #Melihat Confusion Matrix dengan warna cerah
@@ -319,7 +328,7 @@ from sklearn.svm import SVC
 model_svm = SVC(kernel='rbf', random_state=42)
 
 # Latih model
-model_svm.fit(X_train, y_train)
+model_svm.fit(X_train_resampled, y_train_resampled)
 
 # Prediksi data uji
 from sklearn.metrics import accuracy_score, classification_report
@@ -330,7 +339,7 @@ y_pred_svm = model_svm.predict(X_test)
 print(f"Akurasi: {accuracy_score(y_test, y_pred_svm)}")
 print(classification_report(y_test, y_pred_svm))
 
-"""Dari hasil evaluasi diatas model SVM memiliki hasil akurasi sebesar 96%. hasil yang cukup tinggi dan melebihi nilai akurasi dari model random forest. Selanjutnya hasil ini akan kita tingkatkan dengan optimasi yang sama sebelumnya yaitu menggunakan Hyperparameter GridSearch.
+"""Dari hasil evaluasi diatas model SVM memiliki hasil akurasi sebesar 95%. hasil yang cukup tinggi dan melebihi nilai akurasi dari model random forest. Selanjutnya hasil ini akan kita tingkatkan dengan optimasi yang sama sebelumnya yaitu menggunakan Hyperparameter GridSearch.
 
 **Confusion Matrix**
 """
@@ -359,7 +368,7 @@ param_grid_svm = {
     'kernel': ['rbf', 'poly', 'linear']
 }
 grid_search_svm = GridSearchCV(SVC(random_state=42), param_grid=param_grid_svm, cv=5)
-grid_search_svm.fit(X_train_scaled, y_train)
+grid_search_svm.fit(X_train_resampled, y_train_resampled)
 best_svm = grid_search_svm.best_estimator_
 
 # Output hasil terbaik
@@ -389,3 +398,19 @@ plt.title('Confusion Matrix')
 plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
 plt.show()
+
+"""Menggunakan Algoritma XGBoost untuk percobaan data dengan distribusi tidak normal"""
+
+from xgboost import XGBClassifier
+
+# Model XGBoost dengan parameter scale_pos_weight
+model_xgb = XGBClassifier(
+    scale_pos_weight=len(y_train) / sum(y_train),  # Memberikan bobot pada kelas 1
+    random_state=42
+)
+model_xgb.fit(X_train_resampled, y_train_resampled)
+
+# Evaluasi model
+y_pred_xgb = model_xgb.predict(X_test_scaled)
+print(classification_report(y_test, y_pred_xgb))
+print(confusion_matrix(y_test, y_pred_xgb))

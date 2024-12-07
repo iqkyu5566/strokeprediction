@@ -97,70 +97,67 @@ Memvisualisasikan data menggunakan boxplot untuk fitur numerik: [age,hypertensio
 Menganalisa data menggunakan Univariate Analysis Membagi fitur numerik dan kategorik yang terdapat pada dataset
 Melakukan analisa fitur kategori
 
-Count Percent
-gender  
-Female 2897 59.0
-Male 2011 41.0
-Other 1 0.0
-<Axes: title={'center': 'gender'}, xlabel='gender'>
+    Count Percent
+    gender
+    Female 2897 59.0
+    Male 2011 41.0
+    Other 1 0.0
+    <Axes: title={'center': 'gender'}, xlabel='gender'>
 
 ![Visualisasi Boxplot bmi](https://github.com/iqkyu5566/strokeprediction/blob/main/img/dataunderstanding6.png?raw=true)
 
 Menganalisa fitur gender dimana gender other sudah dihilangkan
 
     Count  Percent
-
-gender  
-Female 2897 59.0
-Male 2011 41.0
-<Axes: title={'center': 'gender'}, xlabel='gender'>
+    gender
+    Female 2897 59.0
+    Male 2011 41.0
+    <Axes: title={'center': 'gender'}, xlabel='gender'>
 
 ![Visualisasi Boxplot bmi](https://github.com/iqkyu5566/strokeprediction/blob/main/img/dataunderstanding7.png?raw=true)
 
 menganalisa fitur ever maried
 
-             Count  Percent
-
-ever_married  
-Yes 3204 65.3
-No 1704 34.7
-<Axes: title={'center': 'ever_married'}, xlabel='ever_married'>
+            Count  Percent
+            ever_married
+            Yes 3204 65.3
+            No 1704 34.7
+            <Axes: title={'center': 'ever_married'}, xlabel='ever_married'>
 
 ![Visualisasi Boxplot bmi](https://github.com/iqkyu5566/strokeprediction/blob/main/img/dataunderstanding8.png?raw=true)
 
 Menganalisa fitur work_type
 
     Count  Percent
-
-work_type  
-Private 2810 57.3
-Self-employed 775 15.8
-children 671 13.7
-Govt_job 630 12.8
-Never_worked 22 0.4
-<Axes: title={'center': 'work_type'}, xlabel='work_type'>
+    work_type
+    Private 2810 57.3
+    Self-employed 775 15.8
+    children 671 13.7
+    Govt_job 630 12.8
+    Never_worked 22 0.4
+    <Axes: title={'center': 'work_type'}, xlabel='work_type'>
 
 ![Visualisasi Boxplot bmi](https://github.com/iqkyu5566/strokeprediction/blob/main/img/dataunderstanding9.png?raw=true)
 
 Menganalisa feature residence type
 
-Count Percent
-Residence_type  
-Urban 2490 50.7
-Rural 2418 49.3
-<Axes: title={'center': 'Residence_type'}, xlabel='Residence_type'>
+    Count Percent
+    Residence_type
+    Urban 2490 50.7
+    Rural 2418 49.3
+    <Axes: title={'center': 'Residence_type'}, xlabel='Residence_type'>
 
 ![Visualisasi Boxplot bmi](https://github.com/iqkyu5566/strokeprediction/blob/main/img/dataunderstanding10.png?raw=true)
 
 Menganalisa feature smoking status
 
-Count Percent
-smoking_status  
-never smoked 1852 37.7
-Unknown 1483 30.2
-formerly smoked 836 17.0
-smokes 737 15.0
-<Axes: title={'center': 'smoking_status'}, xlabel='smoking_status'>
+    Count Percent
+    smoking_status
+    never smoked 1852 37.7
+    Unknown 1483 30.2
+    formerly smoked 836 17.0
+    smokes 737 15.0
+    <Axes: title={'center': 'smoking_status'}, xlabel='smoking_status'>
 
 ![Visualisasi Boxplot bmi](https://github.com/iqkyu5566/strokeprediction/blob/main/img/dataunderstanding11.png?raw=true)
 
@@ -179,15 +176,55 @@ Melakukan pengamatan terhadap tingkat korelasi dengan menggunakan matrik korelas
 
 Setelah melakukan proses Data Understanding dan analisis awal terhadap dataset, langkah berikutnya adalah mempersiapkan data untuk proses pelatihan model machine learning. Tahapan Data Preparation mencakup penghapusan fitur yang tidak relevan, pembagian dataset, serta transformasi data agar model dapat bekerja secara optimal.
 
+### Data Cleaning (Penghapusan Fitur yang tidak relevan)
+
+Menghapus(drop) kolom/fitur yang tidak diperlukan
+
+        df.drop(
+            ['id'],
+            axis='columns',
+            inplace=True
+        )
+
+Melakukan pemeriksaan terhadap nilai yang hilang(missing value) pada dataset, dimana di peroleh hasil bahwa pada kolom bmi terdapat 201 missing value.
+
+Menghapus Baris dengan nilai NaN
+
+        df.dropna(subset=['bmi'], inplace=True)
+
+### Feature Engineering
+
+Melakukan konversi feature / atribut kategory menjadi numeric agar bisa dilakukan pemodelan machine learning nantinya.
+
+        category_feature = ['gender', 'ever_married', 'work_type', 'Residence_type', 'smoking_status']
+        df[category_feature] = df[category_feature].apply(lambda col: pd.Categorical(col).codes)
+
 ### Pembagian Data (Data Splitting)
 
 Pembagian Data (Data Splitting) Dataset dibagi menjadi data latih (train) dan data uji (test) dengan rasio 80:20
 Pembagian dataset ini dilakukan untuk memisahkan data menjadi data latih dan data uji. Data latih digunakan untuk melatih model machine learning, sedangkan data uji digunakan untuk menguji performa model. Dengan rasio 80:20, maka 80% dataset digunakan sebagai data latih dan 20% dataset digunakan sebagai data uji.
 
+    #pembagian data train sebesar 80:20
+    from sklearn.model_selection import train_test_split
+    X = df.drop(['stroke'], axis=1)
+    y = df['stroke']
+    from sklearn.model_selection import train_test_split
+
+    # Bagi dataset menjadi 80% data latih dan 20% data uji
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
 ### Transformasi Data
 
 Semua fitur numerik distandarisasi menggunakan StandardScaler
 Dengan melakukan standarisasi, maka nilai-nilai fitur numerik akan memiliki nilai rata-rata 0 dan standar deviasi 1. Hal ini dapat membantu meningkatkan performa model machine learning.
+
+### Menangani Ketidakseimbangan Data dengan Teknik SMOTE
+
+SMOTE (Synthetic Minority Over-sampling Technique) digunakan untuk membuat sampel sintetis pada kelas minoritas.
+
+    from imblearn.over_sampling import SMOTE
+    smote = SMOTE(random_state=42)
+    X_train_resampled, y_train_resampled = smote.fit_resample(X_train_scaled, y_train)
 
 ## Modeling
 
@@ -294,13 +331,15 @@ Untuk melihat hasil pelatihan dari masing-masing model klasifikasi dengan menggu
 
 - Evaluasi Hasil Model Random Forest:
 
-          precision  recall  f1-score   support
+         precision    recall  f1-score   support
 
-           0            0.95      1.00      0.97       929
-           1            0.00      0.00      0.00        53
-          accuracy                          0.95       982
-          macro avg     0.47      0.50      0.49       982
-       weighted avg     0.89      0.95      0.92       982
+           0       0.95      0.97      0.96       929
+           1       0.09      0.06      0.07        53
+
+        accuracy                       0.92       982
+       macro avg   0.52      0.51      0.51       982
+
+  weighted avg 0.90 0.92 0.91 982
 
 - Berikut merupakan hasil dari confusion matrix pada model Random Forest:
 
@@ -308,14 +347,14 @@ Untuk melihat hasil pelatihan dari masing-masing model klasifikasi dengan menggu
 
 - Evaluasi Hasil Model Random Forest dengan Hyperparameter GridSearch:
 
-              precision    recall  f1-score   support
+        precision    recall  f1-score   support
 
-           0              0.95      1.00      0.97       929
-           1              0.00      0.00      0.00        53
+           0       0.95      0.97      0.96       929
+           1       0.10      0.06      0.07        53
 
-           accuracy                           0.95       982
-          macro avg       0.47      0.50      0.49       982
-       weighted avg       0.89      0.95      0.92       982
+        accuracy                       0.92       982
+        macro avg  0.53      0.51      0.52       982
+       weighted avg0.90      0.92      0.91       982
 
 - Berikut merupakan hasil dari confusion matrix pada model Random Forest dengan Hyperparameter GridSearch:
 
@@ -323,15 +362,14 @@ Untuk melihat hasil pelatihan dari masing-masing model klasifikasi dengan menggu
 
 - Evaluasi Hasil Model Support Vektor Machine:
 
-Akurasi: 0.9460285132382892
+        Akurasi: 0.9460285132382892
+              precision    recall  f1-score   support
 
-           precision    recall  f1-score   support
-           0             0.95      1.00      0.97       929
-           1             0.00      0.00      0.00        53
-
-         accuracy                            0.95       982
-         macro avg       0.47      0.50      0.49       982
-         weighted avg    0.89      0.95      0.92       982
+                    0       0.95      1.00      0.97       929
+                    1       0.00      0.00      0.00        53
+      accuracy                                  0.95       982
+      macro avg     0.47    0.50      0.49       982
+      weighted avg  0.89    0.95      0.92       982
 
 - Berikut merupakan hasil dari confusion matrix pada model Support Vektor Machine:
 
@@ -347,19 +385,16 @@ Parameter yang digunakan untuk optimasi model Support Vektor Machine menggunakan
 
 Dari parameter diatas akan dicari nilai parameter terbaik menggunakan GridSearch untuk model klasifikasi support vektor machine.
 
-Best Parameters for SVM: {'C': 0.1, 'gamma': 1, 'kernel': 'rbf'}
+    Best Parameters for SVM: {'C': 10, 'gamma': 1, 'kernel': 'rbf'}
 
-Akurasi: 0.95
-Classification Report:
-precision recall f1-score support
-
-No Stroke 0.95 1.00 0.97 929
-Stroke 0.00 0.00 0.00 53
-
-    accuracy                           0.95       982
-
-macro avg 0.47 0.50 0.49 982
-weighted avg 0.89 0.95 0.92 982
+    Akurasi: 0.90
+    Classification Report:
+                    precision    recall  f1-score   support
+       No Stroke       0.95      0.95      0.95       929
+          Stroke       0.13      0.13      0.13        53
+        accuracy                           0.90       982
+       macro avg       0.54      0.54      0.54       982
+    weighted avg       0.91      0.90      0.91       982
 
 - Berikut merupakan hasil dari confusion matrix pada model Support Vektor Machine:
 
@@ -376,22 +411,22 @@ F1-Score: Kombinasi harmonis antara precision dan recall.
 
 ### Base Model Random Forest:
 
-Accuracy: 95%
-Precision: 89%
-Recall: 95%
-F1-Score: 92%
+    Accuracy: 92%
+    Precision: 95%
+    Recall: 97%
+    F1-Score: 96%
 
 ### Base Model SVM:
 
-Accuracy: 95%
-Precision: 89%
-Recall: 95%
-F1-Score: 92%
+    Accuracy: 95%
+    Precision: 95%
+    Recall: 100%
+    F1-Score: 97%
 
 ### Setelah Hyperparameter Tuning:
 
-Random Forest: Akurasi tetap 95%, tetapi precision dan recall meningkat sedikit.
-SVM: Akurasi tetap 95% dengan peningkatan pada precision dan recall.
+Random Forest: Akurasi turun 92%, tetapi precision dan recall pada class 1 meningkat sedikit.
+SVM: Akurasi turun 90 % tetapi terjadi peningkatan pada precision, recall dan F1 Score pada class 1 (Stroke).
 
 ## Kesimpulan
 
@@ -402,4 +437,4 @@ Precision dan Recall tetap rendah untuk kelas positif (stroke), sehingga perlu d
 
 ## Penutup
 
-Proyek ini menunjukkan potensi machine learning dalam mendeteksi risiko stroke. Namun, untuk menangani ketidakseimbangan data, perlu dilakukan eksperimen lebih lanjut menggunakan teknik seperti SMOTE, peningkatan fitur, atau penggunaan algoritma lain yang sensitif terhadap data tidak seimbang. Langkah ini diharapkan dapat meningkatkan kemampuan prediksi kelas positif, yang sangat penting dalam konteks kesehatan.
+Proyek ini menunjukkan potensi machine learning dalam mendeteksi risiko stroke. Namun, untuk menangani ketidakseimbangan data, perlu dilakukan eksperimen lebih lanjut dengan peningkatan fitur, atau penggunaan algoritma lain yang sensitif terhadap data tidak seimbang. Langkah ini diharapkan dapat meningkatkan kemampuan prediksi kelas positif, yang sangat penting dalam konteks kesehatan.
