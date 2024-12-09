@@ -428,6 +428,24 @@ F1-Score: Kombinasi harmonis antara precision dan recall.
 Random Forest: Akurasi turun 92%, tetapi precision dan recall pada class 1 meningkat sedikit.
 SVM: Akurasi turun 90 % tetapi terjadi peningkatan pada precision, recall dan F1 Score pada class 1 (Stroke).
 
+### Justifikasi terkait hasil prediksi penyakit stroke (1) yang tidak dapat diprediksi dengan baik
+
+Hasil evaluasi menunjukkan bahwa model memiliki akurasi keseluruhan yang tinggi (90%), tetapi kinerja prediksi pada kelas "Stroke" sangat buruk, seperti terlihat dari nilai precision, recall, dan f1-score yang hanya sebesar 0.13 untuk kelas tersebut. Hal ini dapat dijelaskan oleh beberapa faktor berikut:
+
+1. Ketidakseimbangan Data (Class Imbalance)
+   Data yang digunakan untuk melatih model tampaknya sangat tidak seimbang, dengan jumlah sampel untuk kelas "No Stroke" (929) jauh lebih banyak dibandingkan kelas "Stroke" (53).
+   Model cenderung lebih sering memprediksi kelas mayoritas ("No Stroke") untuk memaksimalkan akurasi secara keseluruhan, sehingga performa pada kelas minoritas ("Stroke") menjadi sangat buruk.
+2. Metode Pelatihan Model
+   Jika metode pelatihan tidak memasukkan strategi khusus untuk menangani ketidakseimbangan data, seperti class weighting, oversampling, atau undersampling, model tidak akan terlatih dengan baik untuk mengenali pola pada kelas minoritas.
+   Tanpa teknik tersebut, model hanya berfokus pada optimasi akurasi keseluruhan, bukan performa per kelas.
+3. Kualitas dan Kompleksitas Data
+   Fitur-fitur yang digunakan untuk melatih model mungkin kurang representatif atau tidak cukup untuk membedakan secara efektif antara kelas "Stroke" dan "No Stroke."
+   Karakteristik data kelas "Stroke" mungkin sangat bervariasi, sehingga sulit bagi model untuk menemukan pola yang konsisten.
+4. Pemilihan Model
+   Model yang digunakan mungkin tidak cukup kompleks untuk menangkap pola yang lebih halus dari data kelas "Stroke." Misalnya, model sederhana seperti logistic regression mungkin tidak mampu menangani dataset dengan hubungan non-linear antara fitur-fitur.
+5. Threshold Prediksi
+   Default threshold untuk klasifikasi biasanya 0.5. Jika model menghasilkan probabilitas yang rendah untuk kelas "Stroke," threshold ini dapat membuat model selalu memprediksi kelas mayoritas. Penyesuaian threshold mungkin diperlukan untuk meningkatkan recall pada kelas "Stroke."
+
 ## Kesimpulan
 
 Berdasarkan hasil pelatihan model dengan dua algoritma machine learning, yaitu Random Forest dan Support Vector Machine (SVM), masing-masing model menunjukkan kemampuan yang baik dalam memprediksi risiko stroke. Berikut adalah ringkasan hasil yang diperoleh:
